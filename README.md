@@ -95,9 +95,10 @@ echo get_prev_ipv6($ip);
 
 Return any one of following things.
 
--1: First is less than second
- 0: both are equal
- 1: First is greater than second
+| -1 | First is less than second |
+|  0 | both are equal |
+|  1 | First is greater than second |
+ 
 
  
 ```php

@@ -28,15 +28,17 @@ extern zend_module_entry libipv6_module_entry;
 #define IPV6_NUM_ZONES 8
 #define IPV6_NUM_COLONS 7
 #define IPV6_ZONE_INT 2
+#define IPV6_HEX_ZONE_LEN 16
+#define IPV6_ZONE_HEX_FORMAT "%016lx"
+#define IPV6_ZONE_BIT_CHECKER 1UL
+#define IPV6_INT_MAX UINT64_MAX
+#define IPV6_INT uint64_t
 
-#define IPV6_HEX_ZONE_LEN IPV6_HEX_CHAR_LEN / IPV6_ZONE_INT
-
-#define IPV6_ZONE_HEX_FORMAT "%0" IPV6_HEX_ZONE_LEN "lx"
-
-#define STR_TO_INT(start, end, radix) strtoull(start, end, radix)
+#define STR_TO_INT(start, end, radix) \
+    strtoull(start, end, radix)
 
 typedef struct _ipv6_address {
-    uint64_t zone[IPV6_ZONE_INT];
+    IPV6_INT zone[IPV6_ZONE_INT];
     uint8_t isIPv4;
 } ipv6_address;
 

@@ -97,7 +97,7 @@ PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_CC) {
         addr->zone[i] = STR_TO_INT(num, (char **)NULL, 16);
     }
 
-    return 1;
+    return 0;
 }
 
 
@@ -211,5 +211,270 @@ PHPAPI int ipv6StuctToStringFull(ipv6_address* addr, char* text TSRMLS_CC) {
     
     return 1;
 }
+
+
+
+
+PHPAPI int getNextIPv6Struct(ipv6_address* addr, ipv6_address* next TSRMLS_CC) {
+    int i = 0, ret = 0;
+    
+    
+    for (i = 0; i < IPV6_ZONE_INT; i++) {
+        next->zone[i] = addr->zone[i];
+    }
+    
+    for (i = IPV6_ZONE_INT - 1; i >= 0; i--) {
+        if (next->zone[i] < IPV6_INT_MAX) {
+            next->zone[i]++;
+            ret = 1;
+            break;
+        }
+    }
+    
+    return ret;
+}
+
+
+
+
+
+PHPAPI int getPrevIPv6Struct(ipv6_address* addr, ipv6_address* prev TSRMLS_CC) {
+    int i = 0, ret = 0;
+    
+    for (i = 0; i < IPV6_ZONE_INT; i++) {
+        prev->zone[i] = addr->zone[i];
+    }
+    
+    for (i = IPV6_ZONE_INT - 1; i >= 0; i--) {
+        if (prev->zone[i] > 0) {
+            prev->zone[i]--;
+            ret = 1;
+            break;
+        }
+    }
+    
+    return ret;
+}
+
+PHPAPI int compareIPv6Structs(ipv6_address* x, ipv6_address* y TSRMLS_CC) {
+    int i = 0, ret = 0;
+
+    for (i = 0; i < IPV6_ZONE_INT; i++) {
+        if (x->zone[i] < y->zone[i]) {
+            ret = -1;
+            break;
+        } else if (x->zone[i] > y->zone[i]) {
+            ret = 1;
+            break;
+        }
+    }
+    
+    return ret;
+}
+
+
+
+PHPAPI int getCommonBitsIPv6Structs(ipv6_address* x, ipv6_address* y, int* bits TSRMLS_CC) {
+    int i = 0, j = 0;
+    IPV6_INT b;
+    
+    *bits = 0;
+    
+    for (i = 0; i < IPV6_ZONE_INT; i++) {
+        b = x->zone[i] ^ y->zone[i];
+        
+        if (b == 0) {
+        
+            *bits += ( IPV6_HEX_ZONE_LEN * 4 );
+            
+        } else {
+            for (j = (IPV6_HEX_ZONE_LEN * 4) - 1; j >= 0; j--) {
+                if (b & (IPV6_ZONE_BIT_CHECKER << j)) {
+                    break;
+                } else {
+                    *bits += 1;
+                }
+            }
+            break;
+        }
+    }
+    
+    return 1;
+}
+
+
+
+
+
+// PHP Functions
+
+PHP_FUNCTION(is_valid_ipv6) {
+    int address_len;
+    char *address;
+    ipv6_address ipv6;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &address, &address_len) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+
+
+PHP_FUNCTION(get_full_ipv6) {
+    int address_len;
+    char *address, out[40];
+    ipv6_address ipv6;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &address, &address_len) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0) {
+        ipv6StuctToStringFull(&ipv6, out TSRMLS_CC);
+        
+        RETURN_STRING(out, 1);
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+
+
+PHP_FUNCTION(get_short_ipv6) {
+    int address_len;
+    char *address, out[40];
+    ipv6_address ipv6;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &address, &address_len) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0) {
+        ipv6StuctToString(&ipv6, out TSRMLS_CC);
+        
+        RETURN_STRING(out, 1);
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+
+
+
+PHP_FUNCTION(get_next_ipv6) {
+    int address_len;
+    char *address, out[40];
+    ipv6_address ipv6, next;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &address, &address_len) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0) {
+    
+        if (getNextIPv6Struct(&ipv6, &next TSRMLS_CC)) {
+            ipv6StuctToString(&next, out TSRMLS_CC);
+            
+            RETURN_STRING(out, 1);
+        } else {
+            RETURN_FALSE;
+        }
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+
+
+PHP_FUNCTION(get_prev_ipv6) {
+    int address_len;
+    char *address, out[40];
+    ipv6_address ipv6, prev;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &address, &address_len) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0) {
+    
+        if (getPrevIPv6Struct(&ipv6, &prev TSRMLS_CC)) {
+            ipv6StuctToString(&prev, out TSRMLS_CC);
+            
+            RETURN_STRING(out, 1);
+        } else {
+            RETURN_FALSE;
+        }
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+
+
+PHP_FUNCTION(compare_ipv6) {
+    int address_len, address_len2;
+    char *address, *address2;
+    ipv6_address ipv6, y;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &address, &address_len, &address2, &address_len2) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0 && ipv6StringToStruct(address2, &y TSRMLS_CC) == 0) {
+    
+        RETURN_LONG(compareIPv6Structs(&ipv6, &y TSRMLS_CC));
+        
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+
+
+PHP_FUNCTION(get_common_bits) {
+    int address_len, address_len2, out = 0;
+    char *address, *address2;
+    ipv6_address ipv6, y;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &address, &address_len, &address2, &address_len2) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0 && ipv6StringToStruct(address2, &y TSRMLS_CC) == 0) {
+    
+        getCommonBitsIPv6Structs(&ipv6, &y, &out TSRMLS_CC);
+        
+        RETURN_LONG(out);
+        
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+
+PHP_FUNCTION(is_ipv4_mapped_ipv6) {
+}
+
+
 
 

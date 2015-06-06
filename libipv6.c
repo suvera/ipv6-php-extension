@@ -13,10 +13,34 @@
 #include "php_libipv6.h"
 
 
+// functions Arguments
+ZEND_BEGIN_ARG_INFO(arginfo_ipv6_address, 0)
+	ZEND_ARG_INFO(0, address)
+ZEND_END_ARG_INFO()
+
+
+ZEND_BEGIN_ARG_INFO(arginfo_ipv6_addresses2, 0)
+	ZEND_ARG_INFO(0, address1)
+    ZEND_ARG_INFO(0, address2)
+ZEND_END_ARG_INFO()
+
+//---------------------------------------------------
 
 static int le_libipv6;
 
+
 const zend_function_entry libipv6_functions[] = {
+
+    // IPv6 functions
+    PHP_FE(is_valid_ipv6, arginfo_ipv6_address)
+    PHP_FE(get_full_ipv6, arginfo_ipv6_address)
+    PHP_FE(get_short_ipv6, arginfo_ipv6_address)
+    PHP_FE(get_next_ipv6, arginfo_ipv6_address)
+    PHP_FE(get_prev_ipv6, arginfo_ipv6_address)
+    PHP_FE(compare_ipv6, arginfo_ipv6_addresses2)
+    PHP_FE(get_common_bits, arginfo_ipv6_address)
+    PHP_FE(is_ipv4_mapped_ipv6, arginfo_ipv6_address)
+    
 	PHP_FE_END
 };
 
