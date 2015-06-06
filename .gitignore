@@ -1,0 +1,58 @@
+.idea
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+test.php
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+.deps
+Makefile
+Makefile.fragments
+Makefile.global
+Makefile.objects
+acinclude.m4
+aclocal.m4
+autom4te.cache/
+build/
+config.guess
+config.h
+config.h.in
+config.log
+config.nice
+config.status
+config.sub
+configure
+configure.in
+install-sh
+libtool
+ltmain.sh
+missing
+mkinstalldirs
+run-tests.php
+test.log
+
+
