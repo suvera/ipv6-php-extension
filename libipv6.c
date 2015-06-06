@@ -6,6 +6,10 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
+#include "Zend/zend.h"
+#include "Zend/zend_API.h"
+#include "Zend/zend_exceptions.h"
+#include "arpa/inet.h"
 #include "php_libipv6.h"
 
 
@@ -77,6 +81,7 @@ PHP_MINFO_FUNCTION(libipv6)
 
 }
 
+#include "ipv6.c"
 
 
 
