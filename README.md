@@ -2,16 +2,16 @@
 C extension for PHP - IPv6 Library
 
 ## Prerequisites
-  1. <sub>PHP 5.2 or higher</sub>
-  2. <sub>Make sure you've *phpize* and *php-config* installed.</sub>
+  1. PHP 5.2 or higher
+  2. Make sure you've *phpize* and *php-config* installed.
 
 ## Installation
-  1. <sub>cd ipv6-php-extension</sub>
-  2. <sub>/path/to/phpize</sub>
-  3. <sub>./configure --with-php-config=/path/to/php-config --enable-libipv6</sub>
-  4. <sub>make</sub>
-  5. <sub>make test # optional</sub>
-  6. <sub>sudo make install</sub>
+  1. cd ipv6-php-extension
+  2. /path/to/phpize
+  3. ./configure --with-php-config=/path/to/php-config --enable-libipv6
+  4. make
+  5. make test # optional
+  6. sudo make install
 
 > Add *extension=libipv6.so* to your php.ini
 
@@ -95,6 +95,8 @@ echo get_prev_ipv6($ip);
 
 Return any one of following things.
 
+| Return value | Description |
+| :----------- | :---------- |
 | -1 | First is less than second |
 |  0 | both are equal |
 |  1 | First is greater than second |
