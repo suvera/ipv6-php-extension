@@ -200,10 +200,14 @@ PHPAPI int ipv6StuctToStringFull(ipv6_address* addr, char* text TSRMLS_CC) {
         sprintf(buffer, IPV6_ZONE_HEX_FORMAT, addr->zone[i]);
     
         for (z = 0; z < IPV6_HEX_ZONE_LEN/4; z++) {
-            memcpy(text + t, buffer + (z * 4), 4);
+            memcpy(&text[t], &buffer[z * 4], 4);
             t += 4;
             
-            text[++t] = ':';
+            if (t < IPV6_MAX_CHAR_LEN) {
+                text[t] = ':';
+            }
+            
+            ++t;
         }
     }
     
@@ -217,17 +221,25 @@ PHPAPI int ipv6StuctToStringFull(ipv6_address* addr, char* text TSRMLS_CC) {
 
 PHPAPI int getNextIPv6Struct(ipv6_address* addr, ipv6_address* next TSRMLS_CC) {
     int i = 0, ret = 0;
-    
+    ipv6_address tmp;
     
     for (i = 0; i < IPV6_ZONE_INT; i++) {
-        next->zone[i] = addr->zone[i];
+        tmp.zone[i] = addr->zone[i];
     }
     
     for (i = IPV6_ZONE_INT - 1; i >= 0; i--) {
-        if (next->zone[i] < IPV6_INT_MAX) {
-            next->zone[i]++;
+        if (tmp.zone[i] < IPV6_INT_MAX) {
+            tmp.zone[i]++;
             ret = 1;
             break;
+        } else if (tmp.zone[i] == IPV6_INT_MAX) {
+            tmp.zone[i] = 0;
+        }
+    }
+    
+    if (ret) {
+        for (i = 0; i < IPV6_ZONE_INT; i++) {
+            next->zone[i] = tmp.zone[i];
         }
     }
     
@@ -240,16 +252,25 @@ PHPAPI int getNextIPv6Struct(ipv6_address* addr, ipv6_address* next TSRMLS_CC) {
 
 PHPAPI int getPrevIPv6Struct(ipv6_address* addr, ipv6_address* prev TSRMLS_CC) {
     int i = 0, ret = 0;
+    ipv6_address tmp;
     
     for (i = 0; i < IPV6_ZONE_INT; i++) {
-        prev->zone[i] = addr->zone[i];
+        tmp.zone[i] = addr->zone[i];
     }
     
     for (i = IPV6_ZONE_INT - 1; i >= 0; i--) {
-        if (prev->zone[i] > 0) {
-            prev->zone[i]--;
+        if (tmp.zone[i] > 0) {
+            tmp.zone[i]--;
             ret = 1;
             break;
+        } else if (tmp.zone[i] == 0) {
+            tmp.zone[i] = IPV6_INT_MAX;
+        }
+    }
+    
+    if (ret) {
+        for (i = 0; i < IPV6_ZONE_INT; i++) {
+            prev->zone[i] = tmp.zone[i];
         }
     }
     
