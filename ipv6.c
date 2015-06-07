@@ -1,3 +1,54 @@
+// Utility functions
+// --------------------------------------
+IPV6_INT applyBitMask(int n, IPV6_INT out) {
+    int i = 0;
+    
+    for (; i < n; i++) {
+        out &= ~(IPV6_ZONE_BIT_CHECKER << i);
+    }
+    
+    return out;
+}
+
+IPV6_INT undoBitMask(int n, IPV6_INT out) {
+    int i = 0;
+    
+    for (; i < n; i++) {
+        out |= (IPV6_ZONE_BIT_CHECKER << i);
+    }
+    
+    return out;
+}
+
+int testAnyBitSet(int n, IPV6_INT out) {
+    int i = 0;
+    
+    for (; i < n; i++) {
+        if (out & (IPV6_ZONE_BIT_CHECKER << i)) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+int copyIPv6Zone(ipv6_address *from, ipv6_address *to TSRMLS_CC) {
+    int i = 0;
+    
+    for (; i < IPV6_ZONE_INT; i++) {
+        to->zone[i] = from->zone[i];
+    }
+    
+    return 1;
+}
+
+// ---------------------------------------
+
+
+
+
+// API functions
+// --------------------------------------
 PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_CC) {
     int len = strlen(ip);
     int i = 0, chZones = 0, dividers = 0, twoColon = -1, j = len-1, pos = 0;
@@ -5,7 +56,7 @@ PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_CC) {
 
     if (len < 2 ) {
         return 2;
-    } else if (len > 39) {
+    } else if (len > IPV6_MAX_CHAR_LEN) {
         return 3;
     }
 
@@ -324,11 +375,198 @@ PHPAPI int getCommonBitsIPv6Structs(ipv6_address* x, ipv6_address* y, int* bits 
 }
 
 
+PHPAPI int ipv6NetworkToStruct(char* ip, ipv6_range* range, int strict TSRMLS_CC) {
+    int len = strlen(ip), ret = 0, a = 0, b = 0, i = 0;
+    char ch, address[IPV6_MAX_CHAR_LEN+1], bits[3];
+    long int maskBits = 0;
+    
+    if (len > 43) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "IPv6 Network length is too long %d ", len);
+        return ret;
+    }
+
+    for (i = 0; i < len; i++) {
+        ch = *(ip + i);
+        
+        if (b > 2 || a > IPV6_MAX_CHAR_LEN) {
+            php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid IPv6 Network, Address Length: %d, MaskBit Length: %d", a, b);
+            return 0;
+        }
+
+        if (ret) {
+            bits[b++] = ch;
+        } else {
+            if (ch == '/') {
+                ret = 1;
+            } else {
+                address[a++] = ch;
+            }
+        }
+    }
+    
+    address[a] = 0;
+    bits[b] = 0;
+    
+    maskBits = strtol(bits, (char **)NULL, 10);
+    
+    if (maskBits < 1 || maskBits > IPV6_TOTAL_BITS) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid IPv6 Network, MaskBits: %ld", maskBits);
+        return 0;
+    }
+    
+    ret = ipv6StringToStruct(address, &range->start TSRMLS_CC);
+    
+    if (ret != 0) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid IPv6 Network, Address: %s", address);
+        return 0;
+    }
+    
+    range->isNetwork = 1;
+    range->networkBits = (uint8_t) maskBits;
+    
+    // split bits by zone and mask IP address
+    b = IPV6_HEX_ZONE_LEN * 4;
+    for (i = IPV6_ZONE_INT-1; i >= 0; i--) {
+    
+        if (maskBits < 1 ) {
+            range->end.zone[i] = range->start.zone[i];
+            continue;
+        }
+        
+        a = (int) ((maskBits > b ) ? maskBits - b : maskBits);
+        
+        if (strict && testAnyBitSet(a, range->start.zone[i])) {
+            php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid IPv6 Network, Address has '%s' more length than provided Network mask '%s' ", address, bits);
+            // IPv6 Trap
+            return 0;
+        }
+        
+        range->start.zone[i] = applyBitMask(a, range->start.zone[i]);
+        
+        range->end.zone[i] = undoBitMask(a, range->start.zone[i]);
+        
+        maskBits -= b;
+    }
+    
+    return 1;
+}
 
 
 
-// PHP Functions
+PHPAPI int ipv6RangeToStruct(char* ip1, char* ip2, ipv6_range* range TSRMLS_CC) {
+    int ret;
+    ipv6_address tmp;
+    
+    ret = ipv6StringToStruct(ip1, &range->start TSRMLS_CC);
+    
+    if (ret != 0) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid IPv6 Address: %s", ip1);
+        return 0;
+    }
+    
+    ret = ipv6StringToStruct(ip2, &range->end TSRMLS_CC);
+    
+    if (ret != 0) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid IPv6 Address: %s", ip2);
+        return 0;
+    }
+    
+    range->isNetwork = 0;
+    range->networkBits = 0;
+    
+    if (compareIPv6Structs(&range->start, &range->end TSRMLS_CC) > 0) {
+        tmp = range->start;
+        range->start = range->end;
+        range->end = tmp;
+    }
+    
+    return 1;
+}
 
+
+PHPAPI int inIPv6Range(ipv6_address* ipv6, ipv6_range* range TSRMLS_CC) {
+    if (compareIPv6Structs(ipv6, &range->start TSRMLS_CC) >= 0 && compareIPv6Structs(ipv6, &range->end TSRMLS_CC) <= 0) {
+        return 1;
+    }
+    
+    return 0;
+}
+
+PHPAPI int isIPv6SubRangeOf(ipv6_range* subRange, ipv6_range* range TSRMLS_CC) {
+
+    if (compareIPv6Structs(&subRange->start, &range->start TSRMLS_CC) >= 0 && compareIPv6Structs(&subRange->end, &range->end TSRMLS_CC) <= 0) {
+        return 1;
+    }
+    
+    return 0;
+}
+
+PHPAPI int getIPv6RangeIntersect(ipv6_range* range1, ipv6_range* range2, ipv6_range* result TSRMLS_CC) {
+    int a, b, c, d;
+    
+    a = compareIPv6Structs(&range1->start, &range2->start TSRMLS_CC);
+    b = compareIPv6Structs(&range1->end, &range2->end TSRMLS_CC);
+    
+    if (a <= 0 && b >= 0) {
+        copyIPv6Zone(&result->start, &range1->start);
+        copyIPv6Zone(&result->end, &range1->end);
+        return 1;
+    } else if (a >= 0 && b <= 0) {
+        copyIPv6Zone(&result->start, &range2->start);
+        copyIPv6Zone(&result->end, &range2->end);
+        return 1;
+    }
+    
+    c = compareIPv6Structs(&range1->start, &range2->end TSRMLS_CC);
+    d = compareIPv6Structs(&range1->end, &range2->start TSRMLS_CC);
+    
+    
+    if (a <= 0 && d >=0 && b < 0) {
+        copyIPv6Zone(&result->start, &range2->start);
+        copyIPv6Zone(&result->end, &range1->end);
+        return 1;
+    } else if (a > 0 && c <= 0 && b >= 0) {
+        copyIPv6Zone(&result->start, &range1->start);
+        copyIPv6Zone(&result->end, &range2->end);
+        return 1;
+    }
+    
+    return 0;
+}
+
+PHPAPI int ipv6RangeMerge(ipv6_range* range1, ipv6_range* range2, ipv6_range* result TSRMLS_CC) {
+    ipv6_address a, b;
+    int ret = 0;
+    
+    
+    if (getNextIPv6Struct(&range1->end, &a TSRMLS_CC)) {
+        if (compareIPv6Structs(&range2->start, &a TSRMLS_CC) == 0) {
+            copyIPv6Zone(&result->start, &range1->start);
+            copyIPv6Zone(&result->end, &range2->end);
+            ret = 1;
+        }
+    }
+    
+    if (!ret && getNextIPv6Struct(&range2->end, &b TSRMLS_CC)) {
+        if (compareIPv6Structs(&range1->start, &a TSRMLS_CC) == 0) {
+            copyIPv6Zone(&result->start, &range2->start);
+            copyIPv6Zone(&result->end, &range1->end);
+            ret = 1;
+        }
+    }
+    
+    
+    return ret;
+}
+
+
+// END -------------------------------------------------------------
+
+
+
+
+// PHP Interface Functions
+// ---------------------------------------------------------
 PHP_FUNCTION(is_valid_ipv6) {
     int address_len;
     char *address;
@@ -498,4 +736,24 @@ PHP_FUNCTION(is_ipv4_mapped_ipv6) {
 
 
 
+PHP_FUNCTION(is_valid_ipv6_network) {
+    int address_len;
+    char *address;
+    ipv6_range range;
 
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &address, &address_len) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6NetworkToStruct(address, &range, 1 TSRMLS_CC)) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+
+#include "IPv6Address.c"
+
+#include "IPv6Range.c"

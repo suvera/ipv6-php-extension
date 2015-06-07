@@ -25,7 +25,7 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (get_short_ipv6($testIp) != $expected) {
-        echo "Test Failed, get_short_ipv6() \nExpected: $expected\nActual:   " . get_short_ipv6($testIp) . "\n\n";
+        echo "\nTest Failed, get_short_ipv6() \nExpected: $expected\nActual:   " . get_short_ipv6($testIp) . "\n";
     }
 }
 
@@ -60,7 +60,7 @@ $wrongIps = array(
 
 foreach ($wrongIps as $wrongIp) {
     if (get_short_ipv6($wrongIp) !== false) {
-        echo "Negative Test Failed, get_short_ipv6() \nExpected: false \nActual:   " . get_short_ipv6($wrongIp) . "\n\n";
+        echo "Negative \nTest Failed, get_short_ipv6() \nExpected: false \nActual:   " . get_short_ipv6($wrongIp) . "\n";
     }
 }
 
@@ -85,7 +85,7 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (get_full_ipv6($testIp) != $expected) {
-        echo "Test Failed, get_full_ipv6() \nExpected: $expected\nActual:   " . get_full_ipv6($testIp) . "\n\n";
+        echo "\nTest Failed, get_full_ipv6() \nExpected: $expected\nActual:   " . get_full_ipv6($testIp) . "\n";
     }
 }
 
@@ -113,7 +113,7 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (get_next_ipv6($testIp) !== $expected) {
-        echo "Test Failed, get_next_ipv6() of $testIp,  \nExpected: $expected\nActual:   " . get_next_ipv6($testIp) . "\n\n";
+        echo "\nTest Failed, get_next_ipv6() of $testIp,  \nExpected: $expected\nActual:   " . get_next_ipv6($testIp) . "\n";
     }
 }
 
@@ -137,7 +137,7 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (get_prev_ipv6($testIp) !== $expected) {
-        echo "Test Failed, get_prev_ipv6() of $testIp,  \nExpected: $expected\nActual:   " . get_prev_ipv6($testIp) . "\n\n";
+        echo "\nTest Failed, get_prev_ipv6() of $testIp,  \nExpected: $expected\nActual:   " . get_prev_ipv6($testIp) . "\n";
     }
 }
 
@@ -175,11 +175,11 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (compare_ipv6($testIp, $expected) !== 0) {
-        echo "Test Failed, compare_ipv6() should match $testIp == $expected \n\n";
+        echo "\nTest Failed, compare_ipv6() should match $testIp == $expected \n";
     }
     
     if (compare_ipv6($expected, $testIp) !== 0) {
-        echo "Test Failed, ulta compare_ipv6() should match $expected == $testIp \n\n";
+        echo "\nTest Failed, ulta compare_ipv6() should match $expected == $testIp \n";
     }
 }
 
@@ -206,11 +206,11 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (compare_ipv6($testIp, $expected) !== -1) {
-        echo "Test Failed, 2 compare_ipv6() should be lesser, $testIp < $expected \n\n";
+        echo "\nTest Failed, 2 compare_ipv6() should be lesser, $testIp < $expected \n";
     }
     
     if (compare_ipv6($expected, $testIp) !== 1) {
-        echo "Test Failed, 2 ulta compare_ipv6() should be greater $expected > $testIp \n\n";
+        echo "\nTest Failed, 2 ulta compare_ipv6() should be greater $expected > $testIp \n";
     }
 }
 
@@ -233,11 +233,11 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (compare_ipv6($testIp, $expected) !== 1) {
-        echo "Test Failed, 3 compare_ipv6() should be greater, $testIp > $expected \n\n";
+        echo "\nTest Failed, 3 compare_ipv6() should be greater, $testIp > $expected \n";
     }
     
     if (compare_ipv6($expected, $testIp) !== -1) {
-        echo "Test Failed, 3 ulta compare_ipv6() should be lesser $expected < $testIp \n\n";
+        echo "\nTest Failed, 3 ulta compare_ipv6() should be lesser $expected < $testIp \n";
     }
 }
 
@@ -255,9 +255,26 @@ $ips = array(
 
 foreach ($ips as $testIp => $expected) {
     if (get_common_bits($testIp, $expected[0]) !== $expected[1]) {
-        echo "Test Failed, get_common_bits($testIp, $expected[0]):  \nExpected: $expected[1]\nActual:   " . get_common_bits($testIp, $expected[0]) . "\n\n";
+        echo "\nTest Failed, get_common_bits($testIp, $expected[0]):  \nExpected: $expected[1]\nActual:   " . get_common_bits($testIp, $expected[0]) . "\n";
     }
 }
+
+
+error_reporting(E_ERROR);
+//ini_set('display_errors', 1);
+
+$ips = array(
+    '2001:cdba:9abc:5678::/64' => true,
+    '2001:cdba:9abc:5678:f::/64' => false,
+);
+
+foreach ($ips as $testIp => $expected) {
+    if (is_valid_ipv6_network($testIp) !== $expected) {
+        echo "\nTest Failed, is_valid_ipv6_network($testIp) \nExpected: $expected\nActual:   " . is_valid_ipv6_network($testIp) . "\n";
+    }
+}
+
+
 
 ?>
 --EXPECT--

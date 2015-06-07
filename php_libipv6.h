@@ -23,6 +23,7 @@ extern zend_module_entry libipv6_module_entry;
 #include "inttypes.h"
 
 
+#define IPV6_TOTAL_BITS 128
 #define IPV6_HEX_CHAR_LEN 32
 #define IPV6_MAX_CHAR_LEN 39
 #define IPV6_NUM_ZONES 8
@@ -46,9 +47,17 @@ typedef struct _ipv6_range {
     ipv6_address start;
     ipv6_address end;
     uint8_t isNetwork;
+    uint8_t networkBits;
 } ipv6_range;
 
 
+IPV6_INT applyBitMask(int n, IPV6_INT a);
+
+IPV6_INT undoBitMask(int n, IPV6_INT a);
+
+int testAnyBitSet(int n, IPV6_INT a);
+
+int copyIPv6Zone(ipv6_address *from, ipv6_address *to TSRMLS_DC);
 
 PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_DC);
 
@@ -64,7 +73,17 @@ PHPAPI int compareIPv6Structs(ipv6_address* x, ipv6_address* y TSRMLS_DC);
 
 PHPAPI int getCommonBitsIPv6Structs(ipv6_address* x, ipv6_address* y, int* bits TSRMLS_DC);
 
+PHPAPI int ipv6NetworkToStruct(char* ip, ipv6_range* range, int strict TSRMLS_DC);
 
+PHPAPI int ipv6RangeToStruct(char* ip1, char* ip2, ipv6_range* range TSRMLS_DC);
+
+PHPAPI int inIPv6Range(ipv6_address* ipv6, ipv6_range* range TSRMLS_DC);
+
+PHPAPI int isIPv6SubRangeOf(ipv6_range* subRange, ipv6_range* range TSRMLS_DC);
+
+PHPAPI int getIPv6RangeIntersect(ipv6_range* range1, ipv6_range* range2, ipv6_range* result TSRMLS_DC);
+
+PHPAPI int ipv6RangeMerge(ipv6_range* range1, ipv6_range* range2, ipv6_range* result TSRMLS_DC);
 
 
 
@@ -85,6 +104,13 @@ PHP_FUNCTION(compare_ipv6);
 PHP_FUNCTION(get_common_bits);
 PHP_FUNCTION(is_ipv4_mapped_ipv6);
 
+PHP_FUNCTION(is_valid_ipv6_network);
+
+
+
+#include "IPv6Address.h"
+
+#include "IPv6Range.h"
 
 #ifdef ZTS
 #define LIBIPV6_G(v) TSRMG(libipv6_globals_id, zend_libipv6_globals *, v)
