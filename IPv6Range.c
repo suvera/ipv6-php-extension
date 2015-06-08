@@ -50,7 +50,7 @@ PHP_METHOD(IPv6Range, __toString) {
     strcat(out, "-");
     
     ipv6StuctToString(&thisObj->range.end, ip TSRMLS_CC);
-    strcpy(out, ip);
+    strcat(out, ip);
     
     RETURN_STRING(out, 1);
 }
@@ -94,6 +94,8 @@ PHP_METHOD(IPv6Range, containsAddress) {
     }
 }
 
+
+
 PHP_METHOD(IPv6Range, containsRange) {
     zval *object = getThis();
     ipv6_range_object *thisObj = (ipv6_range_object *) zend_object_store_get_object(object TSRMLS_CC);
@@ -121,6 +123,7 @@ PHP_METHOD(IPv6Range, fromString) {
     int address_len, address_len2;
     char *address, *address2;
     ipv6_range range;
+    ipv6_range_object* resultObject;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &address, &address_len, &address2, &address_len2) == FAILURE) {
         php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
@@ -130,7 +133,7 @@ PHP_METHOD(IPv6Range, fromString) {
     
     if (ipv6RangeToStruct(address, address2, &range TSRMLS_CC)) {
         object_init_ex(return_value, ipv6_range_ce);
-        ipv6_range_object* resultObject = (ipv6_range_object *) zend_object_store_get_object(return_value TSRMLS_CC);
+        resultObject = (ipv6_range_object *) zend_object_store_get_object(return_value TSRMLS_CC);
         resultObject->range = range;
     } else {
         RETURN_NULL();
@@ -159,6 +162,7 @@ PHP_METHOD(IPv6Range, merge) {
         RETURN_NULL();
     }
 }
+
 
 
 PHP_METHOD(IPv6Range, intersect) {
@@ -217,7 +221,7 @@ PHP_METHOD(IPv6Network, __toString) {
     
     sprintf(bits, "%d", (int) thisObj->range.networkBits);
     
-    strcpy(out, bits);
+    strcat(out, bits);
     
     RETURN_STRING(out, 1);
 }

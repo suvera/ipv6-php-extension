@@ -15,6 +15,8 @@ PHP_METHOD(IPv6Address, nextAddress);
 PHP_METHOD(IPv6Address, prevAddress);
 PHP_METHOD(IPv6Address, compare);
 PHP_METHOD(IPv6Address, commonBits);
+PHP_METHOD(IPv6Address, add);
+PHP_METHOD(IPv6Address, subtract);
 
 PHP_METHOD(IPv6Address, fromString);
 
@@ -34,6 +36,8 @@ zend_function_entry ipv6_address_functions[] = {
 	PHP_ME(IPv6Address, prevAddress, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(IPv6Address, compare, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(IPv6Address, commonBits, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(IPv6Address, add, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(IPv6Address, subtract, NULL, ZEND_ACC_PUBLIC)
     
     PHP_ME(IPv6Address, fromString, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	

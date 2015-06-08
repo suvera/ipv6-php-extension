@@ -85,6 +85,10 @@ PHPAPI int getIPv6RangeIntersect(ipv6_range* range1, ipv6_range* range2, ipv6_ra
 
 PHPAPI int ipv6RangeMerge(ipv6_range* range1, ipv6_range* range2, ipv6_range* result TSRMLS_DC);
 
+PHPAPI int IncrIPv6Struct(ipv6_address* addr, ipv6_address* result, long incr TSRMLS_DC);
+
+PHPAPI int decrIPv6Struct(ipv6_address* addr, ipv6_address* result, long number TSRMLS_DC);
+
 
 
 PHP_MINIT_FUNCTION(libipv6);

@@ -560,6 +560,65 @@ PHPAPI int ipv6RangeMerge(ipv6_range* range1, ipv6_range* range2, ipv6_range* re
 }
 
 
+PHPAPI int IncrIPv6Struct(ipv6_address* addr, ipv6_address* result, long incr TSRMLS_CC) {
+    int i = 0;
+    IPV6_INT diff = 0, carry = incr;
+    ipv6_address tmp;
+    
+    copyIPv6Zone(addr, &tmp TSRMLS_CC);
+    
+    for (i = IPV6_ZONE_INT - 1; i >= 0; i--) {
+        diff = IPV6_INT_MAX - tmp.zone[i];
+        
+        if (diff >= carry) {
+            tmp.zone[i] = carry + tmp.zone[i];
+            
+            carry = 0;
+            break;
+        } else {
+            tmp.zone[i] = carry - diff - 1;
+            carry = 1;
+        }
+    }
+    
+    if (!carry) {
+        copyIPv6Zone(&tmp, result TSRMLS_CC);
+    }
+    
+    return carry ? 0 : 1;
+}
+
+
+PHPAPI int decrIPv6Struct(ipv6_address* addr, ipv6_address* result, long number TSRMLS_CC) {
+    int i = 0;
+    IPV6_INT carry = number;
+    ipv6_address tmp;
+	
+	if (number < 0) {
+		carry = number = -number;
+	}
+    
+    copyIPv6Zone(addr, &tmp TSRMLS_CC);
+    
+    for (i = IPV6_ZONE_INT - 1; i >= 0; i--) {
+        if (tmp.zone[i] >= carry) {
+            tmp.zone[i] = tmp.zone[i] - carry;
+            
+            carry = 0;
+            break;
+        } else {
+            carry = 1;
+			tmp.zone[i] = IPV6_INT_MAX - (carry - tmp.zone[i]) + 1;
+        }
+    }
+    
+    if (!carry) {
+        copyIPv6Zone(&tmp, result TSRMLS_CC);
+    }
+    
+    return carry ? 0 : 1;
+}
+
 // END -------------------------------------------------------------
 
 
