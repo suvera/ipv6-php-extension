@@ -98,15 +98,6 @@ echo get_prev_ipv6($ip);
 
 ## compare_ipv6
 
-<style>
-table:nth-of-type(1) {
-    display:table;
-    width:100%;
-}
-table:nth-of-type(1) th:nth-of-type(2) {
-    width:120px;
-}
-</style>
 
 Return any one of following things.
 
@@ -166,6 +157,21 @@ echo compare_ipv6($first, $second);
 
 ```
 
+## is_valid_ipv6_network
+
+Check given network ia valid.
+
+```php
+<?php
+
+$ip = '2001:db8:fe18::/48';
+
+if (is_valid_ipv6_network($ip)) {
+    echo "This is valid IPv6 Network\n";
+}
+
+```
+
 
 ## is_ipv4_mapped_ipv6
 
@@ -193,6 +199,32 @@ if (is_ipv4_mapped_ipv6($ip)) {
 This extension will provide following classes.
 
 ## IPv6Address
+
+```php
+<?php
+
+$ip = IPv6Address::fromString('fe80::226:2dff:fefa:dcb1');
+
+echo $ip->__toString();
+
+echo $ip->getFullAddress();
+
+```
+
+#### Method Summary
+
+| Signature    | Return | Arguments   | Description |
+| :----------- | :------| :-----------| :---------- |
+| public static `fromString( $ipString )` | IPv6Address | string `$ipString`: required, IPv6 String | create IPv6Address from string |
+| public `__toString()` | string | - | get short form of IPv6 string |
+| public `getFullAddress()` | string | - | get short form of IPv6 string |
+| public `nextAddress( $asString = false )` | IPv6Address or string | - | get short form of IPv6 string |
+| public `prevAddress( $asString = false )` | IPv6Address or string | - | get short form of IPv6 string |
+| public `compare( IPv6Address $other )` | int | IPv6Address `$other` | get short form of IPv6 string |
+| public `commonBits( IPv6Address $other )` | int | IPv6Address `$other` | get short form of IPv6 string |
+| public `add( $number )` | IPv6Address or null | int `$number` | get short form of IPv6 string |
+| public `subtract( $number )` | IPv6Address or null | int `$number` | get short form of IPv6 string |
+
 
 ## IPv6Range
 
