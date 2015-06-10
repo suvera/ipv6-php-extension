@@ -218,16 +218,86 @@ echo $ip->getFullAddress();
 | public static `fromString( $ipString )` | IPv6Address | string `$ipString`: required, IPv6 String | create IPv6Address from string |
 | public `__toString()` | string | - | get short form of IPv6 string |
 | public `getFullAddress()` | string | - | get short form of IPv6 string |
-| public `nextAddress( $asString = false )` | IPv6Address or string | - | get short form of IPv6 string |
-| public `prevAddress( $asString = false )` | IPv6Address or string | - | get short form of IPv6 string |
-| public `compare( IPv6Address $other )` | int | IPv6Address `$other` | get short form of IPv6 string |
-| public `commonBits( IPv6Address $other )` | int | IPv6Address `$other` | get short form of IPv6 string |
-| public `add( $number )` | IPv6Address or null | int `$number` | get short form of IPv6 string |
-| public `subtract( $number )` | IPv6Address or null | int `$number` | get short form of IPv6 string |
+| public `nextAddress( $asString = false )` | IPv6Address or string | - | get next address |
+| public `prevAddress( $asString = false )` | IPv6Address or string | - | get previous address |
+| public `compare( IPv6Address $other )` | int | IPv6Address `$other` or string `$other`| Compate other address with this one. see  compare_ipv6 for more info. |
+| public `commonBits( IPv6Address $other )` | int | IPv6Address `$other` | get common bits in both this and other objects |
+| public `add( $number )` | IPv6Address or null | int `$number` | Add to this address and return the IP object |
+| public `subtract( $number )` | IPv6Address or null | int `$number` | Substract from this address and return the IP object  |
 
 
 ## IPv6Range
 
+```php
+<?php
+
+$range = IPv6Range::fromString('fe80::226:2dff:fefa:dcb1', 'fe80::226:2dff:fefa:ffff');
+
+echo $range->__toString();
+
+```
+
+#### Method Summary
+
+| Signature    | Return | Arguments   | Description |
+| :----------- | :------| :-----------| :---------- |
+| public static `fromString( $ipStart, $ipEnd )` | IPv6Address | string `$start`, string `$end` | create IPv6Range from start and end |
+| public `__toString()` | string | - | get display form of IPv6 range |
+| public `containsAddress( IPv6Address $address )` | bool | IPv6Address or string | Check whether a IPv6 address exist in this range |
+| public `containsRange( IPv6Range $range )` | bool | IPv6Range | Check other range exist inside this range |
+| public static `merge( IPv6Range $range1, IPv6Range $range2 )` | IPv6Range | - | return merged Range, or return null if they are completly disjoint. |
+| public static `intersect( IPv6Range $range1, IPv6Range $range2 )` | IPv6Range | - | return intersected Range or null if there no intersection. |
+
+
 ## IPv6Network
 
+
+IPv6Network extends IPv6Range
+
+```php
+<?php
+
+$network = IPv6Network::fromString('fe80::226:2dff::/48');
+
+echo $network->__toString();
+
+```
+
+
+#### Method Summary
+
+| Signature    | Return | Arguments   | Description |
+| :----------- | :------| :-----------| :---------- |
+| public static `fromString( string $ipNetwork )` | IPv6Network | string `$ipNetwork` | create IPv6Network from network string |
+
+
 ## IPv6NetworkMask
+
+
+IPv6NetworkMask extends IPv6Network
+
+```php
+<?php
+
+$networkMask = IPv6NetworkMask::fromPrefixLength(40);
+
+echo $networkMask->__toString();
+// ffff:ffff:ff00::/40
+
+```
+
+
+#### Method Summary
+
+| Signature    | Return | Arguments   | Description |
+| :----------- | :------| :-----------| :---------- |
+| public static `fromPrefixLength( int $prefix )` | IPv6NetworkMask | int `$prefix` | create IPv6NetworkMask from $prefix |
+
+
+
+
+
+
+
+
+
