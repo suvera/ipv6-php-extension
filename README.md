@@ -26,6 +26,7 @@ This extension will provide following functions.
 ## is_valid_ipv6
 
 ```php
+<?php
 
 $ip = 'fe80::226:2dff:fefa:dcba';
 
@@ -40,6 +41,7 @@ if (is_valid_ipv6($ip)) {
 Full expanded IPv6 address
 
 ```php
+<?php
 
 $ip = 'fe80::226:2dff:fefa:dcba';
 
@@ -54,6 +56,7 @@ echo get_full_ipv6($ip);
 Full expanded IPv6 address
 
 ```php
+<?php
 
 $ip = 'fe80:0000:0000:0000::0226:2dff:fefa:dcba';
 
@@ -67,6 +70,7 @@ echo get_short_ipv6($ip);
 ## get_next_ipv6
 
 ```php
+<?php
 
 $ip = 'fe80::226:2dff:fefa:dcba';
 
@@ -81,6 +85,7 @@ echo get_next_ipv6($ip);
 
 
 ```php
+<?php
 
 $ip = 'fe80::226:2dff:fefa:dcbb';
 
@@ -93,6 +98,16 @@ echo get_prev_ipv6($ip);
 
 ## compare_ipv6
 
+<style>
+table:nth-of-type(1) {
+    display:table;
+    width:100%;
+}
+table:nth-of-type(1) th:nth-of-type(2) {
+    width:120px;
+}
+</style>
+
 Return any one of following things.
 
 | Return value | Description |
@@ -104,6 +119,7 @@ Return any one of following things.
 
  
 ```php
+<?php
 
 $first = 'fe80::226:2dff:fefa:dcba';
 $second = 'fe80::226:2dff:fefa:dcbb';
@@ -137,6 +153,7 @@ get first N common bits (it should be in the range 0 to 128 (both inclusive))
 
 
 ```php
+<?php
 
 $first = 'fe80::226:2dff:fefa:dcb1';
 $second = 'fe80::226:2dff:fefa:dcb2';
@@ -158,6 +175,7 @@ it would be represented as 0:0:0:0:0:FFFF:222.1.41.90, or ::FFFF:222.1.41.90.
 
 
 ```php
+<?php
 
 $ip = '::FFFF:222.1.41.90';
 
@@ -174,12 +192,10 @@ if (is_ipv4_mapped_ipv6($ip)) {
 
 This extension will provide following classes.
 
+## IPv6Address
+
 ## IPv6Range
 
 ## IPv6Network
 
 ## IPv6NetworkMask
-
-## IPv6AddressList
-
-## IPv6RangeList
