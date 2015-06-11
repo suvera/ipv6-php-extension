@@ -59,6 +59,8 @@ int testAnyBitSet(int n, IPV6_INT a);
 
 int copyIPv6Zone(ipv6_address *from, ipv6_address *to TSRMLS_DC);
 
+static int checkIPv4Mapped(char* ip, ipv6_address* addr, int start, int len TSRMLS_DC);
+
 PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_DC);
 
 PHPAPI int ipv6StuctToString(ipv6_address* addr, char* ip TSRMLS_DC);

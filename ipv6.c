@@ -52,7 +52,7 @@ int copyIPv6Zone(ipv6_address *from, ipv6_address *to TSRMLS_CC) {
 PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_CC) {
     int len = strlen(ip);
     int i = 0, chZones = 0, dividers = 0, twoColon = -1, j = len-1, pos = 0;
-    char ch, final[IPV6_HEX_CHAR_LEN+1];
+    char ch, final[IPV6_HEX_CHAR_LEN+1], num[IPV6_HEX_ZONE_LEN+1];;
 
     if (len < 2 ) {
         return 2;
@@ -92,6 +92,13 @@ PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_CC) {
             if (++chZones > 4) {
                 return 6;
             }
+            
+        } else if (ch == '.') {
+            if (!checkIPv4Mapped(ip, addr, i-chZones, len TSRMLS_CC)) {
+                return 9;
+            }
+            
+            return 0;
 
         } else if (i < len) {
            return 7;
@@ -137,29 +144,137 @@ PHPAPI int ipv6StringToStruct(char* ip, ipv6_address* addr TSRMLS_CC) {
             }
         }
     }
-    
+
     for (i = 0; i < IPV6_ZONE_INT; i++) {
-        char num[IPV6_HEX_ZONE_LEN+1];
-        
         memcpy(num, &final[i*IPV6_HEX_ZONE_LEN], IPV6_HEX_ZONE_LEN);
         
         num[IPV6_HEX_ZONE_LEN] = 0;
         
         addr->zone[i] = STR_TO_INT(num, (char **)NULL, 16);
     }
+    
+    addr->isIPv4 = 0;
 
     return 0;
 }
 
 
 
+static int checkIPv4Mapped(char* ip, ipv6_address* addr, int start, int len TSRMLS_CC) {
+    char ipv6Part[32], part[4], ch, ipv4Hex[9];
+    int i = 0, k = 0, dots = 0, ipv4Len = 0;
+    long tmp = 0;
+    
+    if (start < 7) {
+        // length is less than 7
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, length is less than 7");
+        return 0;
+    }
+    
+    memset(ipv6Part, 0, sizeof(ipv6Part));
+    strncpy(ipv6Part, ip, start);
+    
+    //printf("IPv6 part length is %d, IPv6: %s, IPv4: %s, ( %d )\n", start, ipv6Part, ipv4Part, len-start);
+    
+    if (strcasecmp(ipv6Part, "::ffff:") != 0 && strcasecmp(ipv6Part, "0:0:0:0:0:ffff:") != 0) {
+        // not a valid IPv6 part
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, not a valid IPv6 part %s ", ipv6Part);
+        return 0;
+    }
+    
+    ipv4Len = len-start;
+    
+    memset(part, 0, sizeof(part));
+    memset(ipv4Hex, 0, sizeof(ipv4Hex));
+    
+    for (i = 0; i < ipv4Len; i++) {
+        ch = *(ip + start + i);
+        
+        if (ch <= '9' && ch >= '0') {
+            if (k > 2) {
+                php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, not a valid IPv4 number %s ", part);
+                return 0;
+            }
+            
+            part[k++] = ch;
+        } else if (ch == '.') {
+            if (dots > 2 || k == 0) {
+                php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, total dots: %d,  IPv6 number length: %d ", dots, k);
+                return 0;
+            }
+            
+            k = 0;
+            
+            tmp = strtol(part, (char **)NULL, 10);
+            if (tmp > 255) {
+                php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, IPv4 number is greater than 255: %s > %ld ", part, tmp);
+                return 0;
+            }
+            
+            sprintf((ipv4Hex + (dots * 2)), "%02lx", tmp);
+            
+            memset(part, 0, sizeof(part));
+            dots++;
+        } else {
+            php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, special character found: %c ", ch);
+            return 0;
+        }
+    }
+    
+    if (dots != 3 || k == 0) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, Final total dots: %d, IPv6 number length: %d ", dots, k);
+        return 0;
+    }
+    
+    tmp = strtol(part, (char **)NULL, 10);
+    if (tmp > 255) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "not a valid IPv4 mapped IPv6 address, IPv4 number is greater than 255: %s > %ld ", part, tmp);
+        return 0;
+    }
+    
+    sprintf((ipv4Hex + (dots * 2)), "%02lx", tmp);
+    
+    addr->isIPv4 = 1;
+    for (i = 0; i < IPV6_ZONE_INT; i++) {
+        addr->zone[i] = 0;
+    }
+    
+    addr->zone[IPV6_ZONE_INT-1] = STR_TO_INT(ipv4Hex, (char **)NULL, 16);
+    
+    return 1;
+}
+
+
+
+
 PHPAPI int ipv6StuctToString(ipv6_address* addr, char* text TSRMLS_CC) {
     int k, z = 0, n = 0, cnt = 0, zeroCounter = 0, curMaxPos = -1, maxPos = -1, maxZeros = 0;
-    char zones[IPV6_NUM_ZONES][5], ip[IPV6_MAX_CHAR_LEN + 1];
+    char zones[IPV6_NUM_ZONES][5], ip[IPV6_MAX_CHAR_LEN + 1], buffer[IPV6_HEX_ZONE_LEN + 1];
+    
+    if (addr->isIPv4 == 1) {
+        strcpy(text, "::ffff:");
+        z = 7;
+        
+        sprintf(buffer, "%08lx", addr->zone[IPV6_ZONE_INT-1]);
+        
+        ip[2] = 0;
+        for (k = 0; k < 8; k+=2) {
+            ip[0] = buffer[k];
+            ip[1] = buffer[k+1];
+            
+            n = strtol(ip, (char **)NULL, 16);
+            
+            sprintf(&text[z], "%d", n);
+            z += (n > 99) ? 3 : ((n > 9) ? 2 : 1);
+            
+            if (k < 6) text[z++] = '.';
+        }
+        
+        return 1;
+    }
+    
     
     for (k = 0; k < IPV6_ZONE_INT; k++) {
-        char buffer[IPV6_HEX_ZONE_LEN + 1];
-        
         sprintf(buffer, IPV6_ZONE_HEX_FORMAT, addr->zone[k]);
         
         memcpy(ip + ( k * IPV6_HEX_ZONE_LEN ), buffer, IPV6_HEX_ZONE_LEN);
@@ -244,6 +359,10 @@ PHPAPI int ipv6StuctToString(ipv6_address* addr, char* text TSRMLS_CC) {
 PHPAPI int ipv6StuctToStringFull(ipv6_address* addr, char* text TSRMLS_CC) {
     int i = 0, z = 0, t = 0;
     char ip[IPV6_MAX_CHAR_LEN + 1];
+    
+    if (addr->isIPv4 == 1) {
+        return ipv6StuctToStringFull(addr, text);
+    }
     
     for (i = 0; i < IPV6_ZONE_INT; i++) {
         char buffer[IPV6_HEX_ZONE_LEN+1];
@@ -791,6 +910,21 @@ PHP_FUNCTION(get_common_bits) {
 
 
 PHP_FUNCTION(is_ipv4_mapped_ipv6) {
+    int address_len;
+    char *address;
+    ipv6_address ipv6;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &address, &address_len) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to read input address");
+        RETURN_FALSE;
+    }
+    
+    if (ipv6StringToStruct(address, &ipv6 TSRMLS_CC) == 0) {
+        if (ipv6.isIPv4)
+            RETURN_TRUE;
+    }
+    
+    RETURN_FALSE;
 }
 
 
