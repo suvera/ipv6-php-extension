@@ -627,12 +627,12 @@ PHPAPI int getIPv6RangeIntersect(ipv6_range* range1, ipv6_range* range2, ipv6_ra
     b = compareIPv6Structs(&range1->end, &range2->end TSRMLS_CC);
     
     if (a <= 0 && b >= 0) {
-        copyIPv6Zone(&result->start, &range1->start);
-        copyIPv6Zone(&result->end, &range1->end);
-        return 1;
-    } else if (a >= 0 && b <= 0) {
         copyIPv6Zone(&result->start, &range2->start);
         copyIPv6Zone(&result->end, &range2->end);
+        return 1;
+    } else if (a >= 0 && b <= 0) {
+        copyIPv6Zone(&result->start, &range1->start);
+        copyIPv6Zone(&result->end, &range1->end);
         return 1;
     }
     
@@ -654,20 +654,47 @@ PHPAPI int getIPv6RangeIntersect(ipv6_range* range1, ipv6_range* range2, ipv6_ra
 }
 
 PHPAPI int ipv6RangeMerge(ipv6_range* range1, ipv6_range* range2, ipv6_range* result TSRMLS_CC) {
-    ipv6_address a, b;
+    ipv6_address addrA;
     int ret = 0;
+    int a, b, c, d;
+    
+    a = compareIPv6Structs(&range1->start, &range2->start TSRMLS_CC);
+    b = compareIPv6Structs(&range1->end, &range2->end TSRMLS_CC);
+    
+    if (a <= 0 && b >= 0) {
+        copyIPv6Zone(&result->start, &range1->start);
+        copyIPv6Zone(&result->end, &range1->end);
+        return 1;
+    } else if (a >= 0 && b <= 0) {
+        copyIPv6Zone(&result->start, &range2->start);
+        copyIPv6Zone(&result->end, &range2->end);
+        return 1;
+    }
+    
+    c = compareIPv6Structs(&range1->start, &range2->end TSRMLS_CC);
+    d = compareIPv6Structs(&range1->end, &range2->start TSRMLS_CC);
     
     
-    if (getNextIPv6Struct(&range1->end, &a TSRMLS_CC)) {
-        if (compareIPv6Structs(&range2->start, &a TSRMLS_CC) == 0) {
+    if (a <= 0 && d >=0 && b < 0) {
+        copyIPv6Zone(&result->start, &range1->start);
+        copyIPv6Zone(&result->end, &range2->end);
+        return 1;
+    } else if (a > 0 && c <= 0 && b >= 0) {
+        copyIPv6Zone(&result->start, &range2->start);
+        copyIPv6Zone(&result->end, &range1->end);
+        return 1;
+    }
+    
+    if (getNextIPv6Struct(&range1->end, &addrA TSRMLS_CC)) {
+        if (compareIPv6Structs(&range2->start, &addrA TSRMLS_CC) == 0) {
             copyIPv6Zone(&result->start, &range1->start);
             copyIPv6Zone(&result->end, &range2->end);
             ret = 1;
         }
     }
     
-    if (!ret && getNextIPv6Struct(&range2->end, &b TSRMLS_CC)) {
-        if (compareIPv6Structs(&range1->start, &a TSRMLS_CC) == 0) {
+    if (!ret && getNextIPv6Struct(&range2->end, &addrA TSRMLS_CC)) {
+        if (compareIPv6Structs(&range1->start, &addrA TSRMLS_CC) == 0) {
             copyIPv6Zone(&result->start, &range2->start);
             copyIPv6Zone(&result->end, &range1->end);
             ret = 1;
