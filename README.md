@@ -250,15 +250,10 @@ echo $range->__toString();
 
 ## IPv6Network
 
-All methods of IPv6Range are available here.
+All methods of IPv6Range are available here because `IPv6Network extends IPv6Range`
 
 ```php
 <?php
-
-class IPv6Network extends IPv6Range {
-    // ----
-}
-
 $network = IPv6Network::fromString('fe80::226:2dff::/48');
 
 echo $network->__toString();
@@ -276,15 +271,10 @@ echo $network->__toString();
 ## IPv6NetworkMask
 
 
-All methods of IPv6Network are available here.
+All methods of IPv6Network are available here becuase `IPv6NetworkMask extends IPv6Network`
 
 ```php
 <?php
-
-class IPv6NetworkMask extends IPv6Network {
-    // ----
-}
-
 $networkMask = IPv6NetworkMask::fromPrefixLength(40);
 
 echo $networkMask->__toString();
