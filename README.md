@@ -216,13 +216,13 @@ echo $ip->getFullAddress();
 | :----------- | :---------- |
 | public static `fromString( string $ipString )` | Return: `IPv6Address`<br>Create IPv6Address object from string |
 | public `__toString()` | Return: `string`<br>Get short form of IPv6 string |
-| public `getFullAddress()` | Return: `string`<br>Get short form of IPv6 string |
-| public `nextAddress( $asString = false )` | Return `IPv6Address` OR `string` when $asString is true<br>Get next address |
-| public `prevAddress( $asString = false )` | Return `IPv6Address` OR `string` when $asString is true<br>get previous address |
-| public `compare( IPv6Address|string $other )` | Return: `int`<br>Compate other address with this one. see  compare_ipv6 for more info. |
-| public `commonBits( IPv6Address|string $other )` |  Return: `int`<br>Get common bits in both this and other objects |
-| public `add( int $number )` | Return: `IPv6Address` or `null`<br>Add to this address and return the IP object |
-| public `subtract( $number )` |  Return: `IPv6Address` or `null`<br>Substract from this address and return the IP object  |
+| public `getFullAddress()` | Return: `string`<br>Get full/expanded form of IPv6 string |
+| public `nextAddress( $asString = false )` | Return: `IPv6Address` by default<br>Return: `string` when $asString is true<br>Get next address |
+| public `prevAddress( $asString = false )` | Return: `IPv6Address` by default<br>Return: `string` when $asString is true<br>get previous address |
+| public `compare( IPv6Address|string $other )` | Return: `int`<br>Compate other address with this one.<br>`-1`: First is less than second<br>`0`: both are equal<br>`1`: First is greater than second|
+| public `commonBits( IPv6Address|string $other )` |  Return: `int`<br>Get common bits in both `this` and `other` object |
+| public `add( int $number )` | Return: `IPv6Address` or `null`<br>Add to this address and<br> return theresult IPv6Address object |
+| public `subtract( $number )` |  Return: `IPv6Address` or `null`<br>Substract from this address and<br> return the result IPv6Address object  |
 
 
 ## IPv6Range
@@ -242,10 +242,10 @@ echo $range->__toString();
 | :----------- | :---------- |
 | public static `fromString( string $ipStart, string $ipEnd )` | Return: `IPv6Address`<br> create IPv6Range from start and end |
 | public `__toString()` |  Return: `string`<br>Get string of IPv6 range |
-| public `containsAddress( IPv6Address|string $address )` | Return: `bool`<br> Check whether a IPv6 address exist in this range |
+| public `containsAddress( IPv6Address|string $address )` | Return: `bool`<br> Check whether a IPv6 address exist <br>in this range |
 | public `containsRange( IPv6Range $range )` | Return: `bool`<br>Check other range exist inside this range |
-| public static `merge( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return merged Range, or return null if they are completly disjoint. |
-| public static `intersect( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return intersected Range or null if there no intersection. |
+| public static `merge( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return merged Range, <br>or return null if they are completly disjoint. |
+| public static `intersect( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return intersected Range <br>or null if there no intersection. |
 
 
 ## IPv6Network
@@ -299,15 +299,3 @@ echo $networkMask->__toString();
 | :----------- | :---------- |
 | public static `fromPrefixLength( int $prefix )` | Return: `IPv6NetworkMask`<br>Create IPv6NetworkMask from number of bits (1 to 128 ) |
 
-
-
-
-
-
-
-
-
-.nice
-
-
-font-size: 1rem; font-family: "Fira Mono", "Source Code Pro", monospace; letter-spacing: -.0625rem; word-spacing: -.125rem;
