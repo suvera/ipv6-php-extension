@@ -19,7 +19,7 @@ C extension for PHP - IPv6 Library
 
 
 # Functions
---------------
+
 
 This extension will provide following functions.
 
@@ -193,8 +193,7 @@ if (is_ipv4_mapped_ipv6($ip)) {
 
 
 
-# Classes 
-------------
+# Classes
 
 This extension will provide following classes.
 
@@ -213,17 +212,17 @@ echo $ip->getFullAddress();
 
 #### Method Summary
 
-| Signature    | Return | Description |
-| :----------- | :------| :-----------| :---------- |
-| public static `fromString( string $ipString )` | IPv6Address | create IPv6Address object from string |
-| public `__toString()` | string | get short form of IPv6 string |
-| public `getFullAddress()` | string | get short form of IPv6 string |
-| public `nextAddress( $asString = false )` | IPv6Address  OR string when $asString is true | get next address |
-| public `prevAddress( $asString = false )` | IPv6Address OR  string when $asString is true | get previous address |
-| public `compare( IPv6Address|string $other )` | int | Compate other address with this one. see  compare_ipv6 for more info. |
-| public `commonBits( IPv6Address|string $other )` | int | get common bits in both this and other objects |
-| public `add( int $number )` | IPv6Address or null | Add to this address and return the IP object |
-| public `subtract( $number )` | IPv6Address or null | Substract from this address and return the IP object  |
+| Signature    | Description |
+| :----------- | :---------- |
+| public static `fromString( string $ipString )` | Return: `IPv6Address`<br>Create IPv6Address object from string |
+| public `__toString()` | Return: `string`<br>Get short form of IPv6 string |
+| public `getFullAddress()` | Return: `string`<br>Get short form of IPv6 string |
+| public `nextAddress( $asString = false )` | Return `IPv6Address` OR `string` when $asString is true<br>Get next address |
+| public `prevAddress( $asString = false )` | Return `IPv6Address` OR `string` when $asString is true<br>get previous address |
+| public `compare( IPv6Address|string $other )` | Return: `int`<br>Compate other address with this one. see  compare_ipv6 for more info. |
+| public `commonBits( IPv6Address|string $other )` |  Return: `int`<br>Get common bits in both this and other objects |
+| public `add( int $number )` | Return: `IPv6Address` or `null`<br>Add to this address and return the IP object |
+| public `subtract( $number )` |  Return: `IPv6Address` or `null`<br>Substract from this address and return the IP object  |
 
 
 ## IPv6Range
@@ -239,14 +238,14 @@ echo $range->__toString();
 
 #### Method Summary
 
-| Signature    | Return | Description |
-| :----------- | :------| :---------- |
-| public static `fromString( string $ipStart, string $ipEnd )` | IPv6Address | create IPv6Range from start and end |
-| public `__toString()` | string | - | get display form of IPv6 range |
-| public `containsAddress( IPv6Address|string $address )` | bool | Check whether a IPv6 address exist in this range |
-| public `containsRange( IPv6Range $range )` | bool | Check other range exist inside this range |
-| public static `merge( IPv6Range $range1, IPv6Range $range2 )` | IPv6Range | return merged Range, or return null if they are completly disjoint. |
-| public static `intersect( IPv6Range $range1, IPv6Range $range2 )` | IPv6Range | return intersected Range or null if there no intersection. |
+| Signature    | Description |
+| :----------- | :---------- |
+| public static `fromString( string $ipStart, string $ipEnd )` | Return: `IPv6Address`<br> create IPv6Range from start and end |
+| public `__toString()` |  Return: `string`<br>Get string of IPv6 range |
+| public `containsAddress( IPv6Address|string $address )` | Return: `bool`<br> Check whether a IPv6 address exist in this range |
+| public `containsRange( IPv6Range $range )` | Return: `bool`<br>Check other range exist inside this range |
+| public static `merge( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return merged Range, or return null if they are completly disjoint. |
+| public static `intersect( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return intersected Range or null if there no intersection. |
 
 
 ## IPv6Network
@@ -269,9 +268,9 @@ echo $network->__toString();
 
 #### Method Summary
 
-| Signature    | Return | Description |
-| :----------- | :------ | :---------- |
-| public static `fromString( string $ipNetwork )` | IPv6Network | create IPv6Network object from network string |
+| Signature    | Description |
+| :----------- | :---------- |
+| public static `fromString( string $ipNetwork )` | Return: `IPv6Network`<br>Create IPv6Network object from network string |
 
 
 ## IPv6NetworkMask
@@ -296,9 +295,9 @@ echo $networkMask->__toString();
 
 #### Method Summary
 
-| Signature    | Return | Description |
-| :----------- | :------ | :---------- |
-| public static `fromPrefixLength( int $prefix )` | IPv6NetworkMask | create IPv6NetworkMask from number of bits (1 to 128 ) |
+| Signature    | Description |
+| :----------- | :---------- |
+| public static `fromPrefixLength( int $prefix )` | Return: `IPv6NetworkMask`<br>Create IPv6NetworkMask from number of bits (1 to 128 ) |
 
 
 
@@ -308,3 +307,7 @@ echo $networkMask->__toString();
 
 
 
+.nice
+
+
+font-size: 1rem; font-family: "Fira Mono", "Source Code Pro", monospace; letter-spacing: -.0625rem; word-spacing: -.125rem;
