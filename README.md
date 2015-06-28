@@ -106,9 +106,9 @@ Return any one of following things.
 | -1 | First is less than second |
 |  0 | both are equal |
 |  1 | First is greater than second |
- 
 
- 
+
+
 ```php
 <?php
 
@@ -221,8 +221,9 @@ echo $ip->getFullAddress();
 | public `prevAddress( $asString = false )` | Return: `IPv6Address` by default<br>Return: `string` when $asString is true<br>get previous address |
 | public `compare( IPv6Address|string $other )` | Return: `int`<br>Compate other address with this one.<br>`-1`: First is less than second<br>`0`: both are equal<br>`1`: First is greater than second|
 | public `commonBits( IPv6Address|string $other )` |  Return: `int`<br>Get common bits in both `this` and `other` object |
-| public `add( int $number )` | Return: `IPv6Address` or `null`<br>Add to this address and<br> return theresult IPv6Address object |
+| public `add( int $number )` | Return: `IPv6Address` or `null`<br>Add to this address and<br> return the result IPv6Address object |
 | public `subtract( $number )` |  Return: `IPv6Address` or `null`<br>Substract from this address and<br> return the result IPv6Address object  |
+| public `maskWithNetworkMask( IPv6NetworkMask|int $mask, bool $returnString=false )` |  Return: `IPv6Address` or `null`<br> $mask can be either IPv6NetworkMask or int prefix 1 - 128<br>Return the address after netwrok mask applied.   |
 
 
 ## IPv6Range
@@ -244,6 +245,8 @@ echo $range->__toString();
 | public `__toString()` |  Return: `string`<br>Get string of IPv6 range |
 | public `containsAddress( IPv6Address|string $address )` | Return: `bool`<br> Check whether a IPv6 address exist <br>in this range |
 | public `containsRange( IPv6Range $range )` | Return: `bool`<br>Check other range exist inside this range |
+| public `getMinAddress($returnString = false)` | Return: `IPv6Address` or string if $returnString is true<br>return Start address of this range or network. |
+| public `getMaxAddress($returnString = false)` | Return: `IPv6Address` or string if $returnString is true<br>return End address of this range or network. |
 | public static `merge( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return merged Range, <br>or return null if they are completly disjoint. |
 | public static `intersect( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return intersected Range <br>or null if there no intersection. |
 
@@ -288,4 +291,3 @@ echo $networkMask->__toString();
 | Signature    | Description |
 | :----------- | :---------- |
 | public static `fromPrefixLength( int $prefix )` | Return: `IPv6NetworkMask`<br>Create IPv6NetworkMask from number of bits (1 to 128 ) |
-
