@@ -21,6 +21,9 @@ PHP_METHOD(IPv6Range, fromString);
 PHP_METHOD(IPv6Range, merge);
 PHP_METHOD(IPv6Range, intersect);
 
+PHP_METHOD(IPv6Range, getMinAddress);
+PHP_METHOD(IPv6Range, getMaxAddress);
+
 zend_object_value ipv6_range_create_object_handler(zend_class_entry *class_type TSRMLS_DC);
 static zend_object_handlers ipv6_range_object_handlers;
 
@@ -28,15 +31,18 @@ zend_function_entry ipv6_range_functions[] = {
     // PHP Class Functions
     PHP_ME(IPv6Range, __construct, NULL, ZEND_ACC_PROTECTED|ZEND_ACC_CTOR)
     PHP_ME(IPv6Range, __toString, NULL, ZEND_ACC_PUBLIC)
-    
-	PHP_ME(IPv6Range, containsAddress, NULL, ZEND_ACC_PUBLIC)
-	PHP_ME(IPv6Range, containsRange, NULL, ZEND_ACC_PUBLIC)
-    
+
+    PHP_ME(IPv6Range, containsAddress, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(IPv6Range, containsRange, NULL, ZEND_ACC_PUBLIC)
+
+    PHP_ME(IPv6Range, getMinAddress, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(IPv6Range, getMaxAddress, NULL, ZEND_ACC_PUBLIC)
+
     PHP_ME(IPv6Range, fromString, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
     PHP_ME(IPv6Range, merge, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
     PHP_ME(IPv6Range, intersect, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-	
-	{NULL, NULL, NULL}	/* Must be the last line in ipv6 functions[] */
+
+    {NULL, NULL, NULL}    /* Must be the last line in ipv6 functions[] */
 };
 
 
@@ -52,8 +58,8 @@ zend_function_entry ipv6_network_functions[] = {
     // PHP Class Functions
     PHP_ME(IPv6Network, fromString, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
     PHP_ME(IPv6Network, __toString, NULL, ZEND_ACC_PUBLIC)
-	
-	{NULL, NULL, NULL}	/* Must be the last line in ipv6 functions[] */
+
+    {NULL, NULL, NULL}    /* Must be the last line in ipv6 functions[] */
 };
 
 
@@ -68,9 +74,6 @@ static zend_object_handlers ipv6_networkmask_object_handlers;
 zend_function_entry ipv6_networkmask_functions[] = {
     // PHP Class Functions
     PHP_ME(IPv6NetworkMask, fromPrefixLength, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-	
-	{NULL, NULL, NULL}	/* Must be the last line in ipv6 functions[] */
+
+    {NULL, NULL, NULL}    /* Must be the last line in ipv6 functions[] */
 };
-
-
-

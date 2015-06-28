@@ -8,11 +8,11 @@ extern zend_module_entry libipv6_module_entry;
 #define PHP_LIBIPV6_VERSION "0.1.0"
 
 #ifdef PHP_WIN32
-#	define PHP_LIBIPV6_API __declspec(dllexport)
+#    define PHP_LIBIPV6_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_LIBIPV6_API __attribute__ ((visibility("default")))
+#    define PHP_LIBIPV6_API __attribute__ ((visibility("default")))
 #else
-#	define PHP_LIBIPV6_API
+#    define PHP_LIBIPV6_API
 #endif
 
 #ifdef ZTS
@@ -91,6 +91,8 @@ PHPAPI int IncrIPv6Struct(ipv6_address* addr, ipv6_address* result, long incr TS
 
 PHPAPI int decrIPv6Struct(ipv6_address* addr, ipv6_address* result, long number TSRMLS_DC);
 
+PHPAPI int createNetworkMaskFromPrefix(long prefix, ipv6_range* range TSRMLS_DC);
+
 
 
 PHP_MINIT_FUNCTION(libipv6);
@@ -125,4 +127,3 @@ PHP_FUNCTION(is_valid_ipv6_network);
 #endif
 
 #endif
-
