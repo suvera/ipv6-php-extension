@@ -197,12 +197,12 @@ if (is_ipv4_mapped_ipv6($ip)) {
 
 This extension will provide following classes.
 
-## IPv6Address
+## IPv6Addres
 
 ```php
 <?php
 
-$ip = IPv6Address::fromString('fe80::226:2dff:fefa:dcb1');
+$ip = IPv6Addres::fromString('fe80::226:2dff:fefa:dcb1');
 
 echo $ip->__toString();
 
@@ -214,16 +214,16 @@ echo $ip->getFullAddress();
 
 | Signature    | Description |
 | :----------- | :---------- |
-| public static `fromString( string $ipString )` | Return: `IPv6Address`<br>Create IPv6Address object from string |
+| public static `fromString( string $ipString )` | Return: `IPv6Addres`<br>Create IPv6Addres object from string |
 | public `__toString()` | Return: `string`<br>Get short form of IPv6 string |
 | public `getFullAddress()` | Return: `string`<br>Get full/expanded form of IPv6 string |
-| public `nextAddress( $asString = false )` | Return: `IPv6Address` by default<br>Return: `string` when $asString is true<br>Get next address |
-| public `prevAddress( $asString = false )` | Return: `IPv6Address` by default<br>Return: `string` when $asString is true<br>get previous address |
-| public `compare( IPv6Address|string $other )` | Return: `int`<br>Compate other address with this one.<br>`-1`: First is less than second<br>`0`: both are equal<br>`1`: First is greater than second|
-| public `commonBits( IPv6Address|string $other )` |  Return: `int`<br>Get common bits in both `this` and `other` object |
-| public `add( int $number )` | Return: `IPv6Address` or `null`<br>Add to this address and<br> return the result IPv6Address object |
-| public `subtract( $number )` |  Return: `IPv6Address` or `null`<br>Substract from this address and<br> return the result IPv6Address object  |
-| public `maskWithNetworkMask( IPv6NetworkMask|int $mask, bool $returnString=false )` |  Return: `IPv6Address` or `null`<br> $mask can be either IPv6NetworkMask or int prefix 1 - 128<br>Return the address after netwrok mask applied.   |
+| public `nextAddress( $asString = false )` | Return: `IPv6Addres` by default<br>Return: `string` when $asString is true<br>Get next address |
+| public `prevAddress( $asString = false )` | Return: `IPv6Addres` by default<br>Return: `string` when $asString is true<br>get previous address |
+| public `compare( IPv6Addres|string $other )` | Return: `int`<br>Compate other address with this one.<br>`-1`: First is less than second<br>`0`: both are equal<br>`1`: First is greater than second|
+| public `commonBits( IPv6Addres|string $other )` |  Return: `int`<br>Get common bits in both `this` and `other` object |
+| public `add( int $number )` | Return: `IPv6Addres` or `null`<br>Add to this address and<br> return the result IPv6Addres object |
+| public `subtract( $number )` |  Return: `IPv6Addres` or `null`<br>Substract from this address and<br> return the result IPv6Addres object  |
+| public `maskWithNetworkMask( IPv6NetworkMask|int $mask, bool $returnString=false )` |  Return: `IPv6Addres` or `null`<br> $mask can be either IPv6NetworkMask or int prefix 1 - 128<br>Return the address after netwrok mask applied.   |
 
 
 ## IPv6Range
@@ -241,12 +241,12 @@ echo $range->__toString();
 
 | Signature    | Description |
 | :----------- | :---------- |
-| public static `fromString( string $ipStart, string $ipEnd )` | Return: `IPv6Address`<br> create IPv6Range from start and end |
+| public static `fromString( string $ipStart, string $ipEnd )` | Return: `IPv6Addres`<br> create IPv6Range from start and end |
 | public `__toString()` |  Return: `string`<br>Get string of IPv6 range |
-| public `containsAddress( IPv6Address|string $address )` | Return: `bool`<br> Check whether a IPv6 address exist <br>in this range |
+| public `containsAddress( IPv6Addres|string $address )` | Return: `bool`<br> Check whether a IPv6 address exist <br>in this range |
 | public `containsRange( IPv6Range $range )` | Return: `bool`<br>Check other range exist inside this range |
-| public `getMinAddress($returnString = false)` | Return: `IPv6Address` or string if $returnString is true<br>return Start address of this range or network. |
-| public `getMaxAddress($returnString = false)` | Return: `IPv6Address` or string if $returnString is true<br>return End address of this range or network. |
+| public `getMinAddress($returnString = false)` | Return: `IPv6Addres` or string if $returnString is true<br>return Start address of this range or network. |
+| public `getMaxAddress($returnString = false)` | Return: `IPv6Addres` or string if $returnString is true<br>return End address of this range or network. |
 | public static `merge( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return merged Range, <br>or return null if they are completly disjoint. |
 | public static `intersect( IPv6Range $range1, IPv6Range $range2 )` | Return: `IPv6Range`<br>return intersected Range <br>or null if there no intersection. |
 
