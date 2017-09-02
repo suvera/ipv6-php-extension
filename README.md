@@ -151,7 +151,7 @@ $second = 'fe80::226:2dff:fefa:dcb2';
 
 // they have first 126 bits in common
 
-echo compare_ipv6($first, $second);
+echo get_common_bits($first, $second);
 
 // prints: 126
 
@@ -219,11 +219,11 @@ echo $ip->getFullAddress();
 | public `getFullAddress()` | Return: `string`<br>Get full/expanded form of IPv6 string |
 | public `nextAddress( $asString = false )` | Return: `IPv6Address` by default<br>Return: `string` when $asString is true<br>Get next address |
 | public `prevAddress( $asString = false )` | Return: `IPv6Address` by default<br>Return: `string` when $asString is true<br>get previous address |
-| public `compare( IPv6Address|string $other )` | Return: `int`<br>Compate other address with this one.<br>`-1`: First is less than second<br>`0`: both are equal<br>`1`: First is greater than second|
-| public `commonBits( IPv6Address|string $other )` |  Return: `int`<br>Get common bits in both `this` and `other` object |
-| public `add( int $number )` | Return: `IPv6Address` or `null`<br>Add to this address and<br> return the result IPv6Address object |
-| public `subtract( $number )` |  Return: `IPv6Address` or `null`<br>Substract from this address and<br> return the result IPv6Address object  |
-| public `maskWithNetworkMask( IPv6NetworkMask|int $mask, bool $returnString=false )` |  Return: `IPv6Address` or `null`<br> $mask can be either IPv6NetworkMask or int prefix 1 - 128<br>Return the address after netwrok mask applied.   |
+| public `compare( IPv6Address|string $other )` | Return: `int` <br>Compate other address with this one.<br>`-1`: First is less than second<br>`0` : both are equal<br>`1` : First is greater than second|
+| public `commonBits( IPv6Address|string $other )` |  Return: `int` <br>Get common bits in both `this` and `other` object |
+| public `add( int $number )` | Return: `IPv6Address` or `null` <br>Add to this address and<br> return the result IPv6Address object |
+| public `subtract( $number )` |  Return: `IPv6Address` or `null` <br>Substract from this address and<br> return the result IPv6Address object  |
+| public `maskWithNetworkMask( IPv6NetworkMask|int $mask, bool $returnString=false )` |  Return: `IPv6Address` or `null` <br> $mask can be either IPv6NetworkMask or int prefix 1 - 128<br>Return the address after netwrok mask applied.   |
 
 
 ## IPv6Range
